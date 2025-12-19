@@ -5,12 +5,17 @@
 #include <climits>
 using namespace std;
 
+struct uuu
+{
+    int val, ai, bi;
+    bool operator>(const uuu &other) const
+    {
+        return this->val > other.val;
+    }
+};
 int n;
 vector<int> a, b;
-int ifuse[6][2] = {1, 1, 1, 1, 0, 0};
-
-typedef uuu<int, int, int>; // 结果//a[]//b[]
-priority_queue<uuu, vector<uuu>, greater<uuu>> ans;
+priority_queue<uuu, vector<uuu>, greater<uuu>> check;
 int main()
 {
     cin >> n;
@@ -26,29 +31,19 @@ int main()
         cin >> x;
         b.push_back(x);
     }
-    ans.push({a[1] + b[1], 1, 1});
-    int sum = 1;
-    while (sum <= n)
+    int sum = 0;
+    for (int i = 0; i < n; i++)
     {
-        now = ans.top();
-        int ai = now.second;
-        int bi = now.third;
-        int nextai = ai + 1;
-        int nextbi = bi + 1;
-        if ()
+        check.push({a[i] + b[0], i, 0});
     }
-    // for (int i = 0; i < n; i++)
-    // {
-    //     for (int j = 0; j < n; j++)
-    //     {
-    //         ans.push(a[i] + b[j]);
-    //     }
-    // }
-
-    for (int i = 1; i <= n; i++)
+    while (sum < n)
     {
-        cout << ans.top() << " ";
-        ans.pop();
+        uuu now = check.top();
+        check.pop();
+        cout << now.val << " ";
+        if (now.bi + 1 < n)
+            check.push({a[now.ai] + b[now.bi + 1], now.ai, now.bi + 1});
+        sum++;
     }
     return 0;
 }

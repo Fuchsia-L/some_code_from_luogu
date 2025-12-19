@@ -1,60 +1,52 @@
-#include <iostream>
-#include <queue>
-#include <functional>
-#include <vector>
-#include <climits>
+#include <bits/stdc++.h>
 using namespace std;
-
-typedef pair<int, int> pii; // first 是距离//
-
-bool vis[int(1e5)];
-int dist[int(1e5)];
-int INF = INT_MAX;
-
-priority_queue<pii, vector<pii>, greater<pii>> pq;
-vector<pii> adj[int(1e5)];
-
-int n, m, s;
-
-void start()
+using ll = long long;
+const long long maxn = 1e5 + 2;
+ll vis[maxn];
+struct node
 {
-    for (int i = 1; i <= n; i++)
+    ll v, w;
+    bool operator>(const node &other) const
     {
-        vis[i] = false;
-        dist[i] = INF;
+        return this->w > other.w;
     }
-    dist[s] = 0;
-}
-
+};
+vector<node> path[maxn];
+ll n, m, s;
 int main()
 {
     cin >> n >> m >> s;
-    start();
-    pq.push({0, s});
     for (int i = 1; i <= m; i++)
     {
-        int st, ed, le;
-        cin >> st >> ed >> le;
-        adj[st].push_back({le, ed});
+        ll u, v, w;
+        cin >> u >> v >> w;
+        path[u].push_back({v, w});
     }
+    for (int i = 0; i <= n; i++)
+    {
+        vis[i] = 1e9 + 1;
+    }
+    priority_queue<node, vector<node>, greater<node>> pq;
+    pq.push({s, 0});
+    vis[s] = 0;
     while (!pq.empty())
     {
-        pii now = pq.top();
+        node now = pq.top();
         pq.pop();
-        if (vis[now.second])
+        if (vis[now.v] != now.w)
             continue;
-        vis[now.second] = true;
-        for (auto it = adj[now.second].begin(); it != adj[now.second].end(); it++)
+        for (node towhere : path[now.v])
         {
-            int w2 = it->first + now.first;
-            if (dist[it->second] > w2)
+            if (towhere.w + now.w < vis[towhere.v])
             {
-                pq.push({w2, it->second});
-                dist[it->second] = w2;
+                vis[towhere.v] = towhere.w + now.w;
+                pq.push({towhere.v, vis[towhere.v]});
             }
         }
     }
     for (int i = 1; i <= n; i++)
-        cout << dist[i] << " ";
+    {
+        cout << vis[i] << " ";
+    }
     return 0;
 }

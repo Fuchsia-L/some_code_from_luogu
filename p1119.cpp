@@ -1,113 +1,56 @@
 #include <bits/stdc++.h>
 using namespace std;
-int n, m, city[202], bk = 0;
-int dis[202][202];
+
+const int INF = 1e9;
+int n, m;
+int city[205];
+int dis[205][205];
+
 int main()
 {
     cin >> n >> m;
-    for (int i = 0; i <= n - 1; i++)
+    for (int i = 0; i < n; i++)
         cin >> city[i];
+
     for (int i = 0; i < n; i++)
     {
         for (int j = 0; j < n; j++)
-        {
-            dis[i][j] = INT_MAX / 2;
-        }
+            dis[i][j] = INF;
         dis[i][i] = 0;
     }
     for (int i = 1; i <= m; i++)
     {
         int u, v, w;
         cin >> u >> v >> w;
-        dis[u][v] = w;
-        dis[v][u] = w;
+        dis[u][v] = dis[v][u] = w;
     }
-    cin >> m;
-    int x, y, t;
-    for (int i = 1; i <= m; i++)
+    int Q;
+    cin >> Q;
+    int k = 0;
+
+    while (Q--)
     {
-        int k = 0;
+        int x, y, t;
         cin >> x >> y >> t;
-        for (k = 0; k < n; k++)
+
+        // 【核心】：利用单调性，接着上次的进度继续更新
+        // 只有当 city[k] <= t 时，说明第 k 个村庄修好了，可以用来做中转点了
+        while (k < n && city[k] <= t)
         {
-            if (city[k] > t)
-                continue;
             for (int i = 0; i < n; i++)
             {
-                if (city[i] > t)
-                    continue;
                 for (int j = 0; j < n; j++)
                 {
-                    if (city[j] > t)
-                        continue;
-                    dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j]);
-                    dis[j][i] = dis[i][j];
+                    if (dis[i][k] != INF && dis[k][j] != INF)
+                        dis[i][j] = min(dis[i][j], dis[i][k] + dis[k][j]);
                 }
             }
+            k++; // 这个村庄处理完了，看下一个
         }
-        if (dis[x][y] >= INT_MAX / 2 || city[x] > t || city[y] > t)
+        if (city[x] > t || city[y] > t || dis[x][y] == INF)
             cout << -1 << endl;
         else
             cout << dis[x][y] << endl;
     }
     return 0;
 }
-// #include <bits/stdc++.h>
-// using namespace std;
-// int n, m, city[202];
-// int citybook[202] = {0}, book[202];
-// vector<pair<int, int>> g[202];
-// priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
-// void dj(int s, int t)
-// {
-//     for (int i = 0; i <= n - 1; i++)
-//     {
-//         book[i] = INT_MAX;
-//         if (t >= city[i])
-//             citybook[i] = 1;
-//     }
-//     if (citybook[s] == 0)
-//         return;
-//     book[s] = 0;
-//     pq.push({0, s});
-//     while (!pq.empty())
-//     {
-//         auto [wi, ui] = pq.top();
-//         pq.pop();
-//         if (book[ui] < wi)
-//             continue;
-//         for (auto next : g[ui])
-//         {
-//             if ((book[next.second] > wi + next.first) && citybook[next.second] == 1)
-//             {
-//                 book[next.second] = wi + next.first;
-//                 pq.push({wi + next.first, next.second});
-//             }
-//         }
-//     }
-// }
-// int main()
-// {
-//     cin >> n >> m;
-//     for (int i = 0; i <= n - 1; i++)
-//         cin >> city[i];
-//     for (int i = 1; i <= m; i++)
-//     {
-//         int u, v, w;
-//         cin >> u >> v >> w;
-//         g[u].push_back({w, v});
-//         g[v].push_back({w, u});
-//     }
-//     cin >> m;
-//     int x, y, t;
-//     for (int i = 1; i <= m; i++)
-//     {
-//         cin >> x >> y >> t;
-//         dj(x, t);
-//         if (book[y] == INT_MAX)
-//             cout << -1 << endl;
-//         else
-//             cout << book[y] << endl;
-//     }
-//     return 0;
-// }
